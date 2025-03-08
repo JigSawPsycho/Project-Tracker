@@ -344,7 +344,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fe6b0377f4910c46aa966b3531a55b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weekPadding: 5
   teamNameText: {fileID: 1311020952}
+  asAtTimeText: {fileID: 1720366506}
   weekPrefab: {fileID: 3249885890848306450, guid: 0db514f8c912afe46a4b5b45e34e5493, type: 3}
   weekContainer: {fileID: 1593819469}
   rowPrefab: {fileID: 5298772117454188471, guid: 59ae7ba8cd68f6c49a1f4de120973db6, type: 3}
@@ -356,7 +358,8 @@ MonoBehaviour:
   projectContainer: {fileID: 1283360000}
   projectNoteBoxPrefab: {fileID: -7189763467130845843, guid: b8f97c60fdb7fc44c89a87bbe3e3f5bc, type: 3}
   projectNoteBoxContainer: {fileID: 1488410423}
-  projectProgressPrefab: {fileID: 8454862939072517011, guid: 6b17acd1c1c356a40908dee5209c6699, type: 3}
+  projectProgressPrefab: {fileID: 6401929973686560939, guid: 6b17acd1c1c356a40908dee5209c6699, type: 3}
+  reportWeekMarkerPrefab: {fileID: 238550253090108011, guid: 06db2ccdf8a135a49aeb8b26b3475394, type: 3}
 --- !u!1 &542555012
 GameObject:
   m_ObjectHideFlags: 0
@@ -392,7 +395,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -18.763, y: -197}
+  m_AnchoredPosition: {x: -18.76294, y: -197}
   m_SizeDelta: {x: -84.474, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &607453635

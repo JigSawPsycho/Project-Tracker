@@ -520,7 +520,7 @@ GameObject:
   - component: {fileID: 8743176297527403921}
   - component: {fileID: 3700371861546027980}
   - component: {fileID: 96317635419655479}
-  - component: {fileID: 8454862939072517011}
+  - component: {fileID: 6401929973686560939}
   m_Layer: 5
   m_Name: Project Progress
   m_TagString: Untagged
@@ -546,11 +546,11 @@ RectTransform:
   - {fileID: 6982968979043862611}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -389.16, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: -584.99, y: 0}
   m_SizeDelta: {x: 391.66003, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &3700371861546027980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -622,7 +622,7 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!114 &8454862939072517011
+--- !u!114 &6401929973686560939
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -631,8 +631,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8432154412637912384}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ff560e6ef73e624e8d13f7f604c3918, type: 3}
+  m_Script: {fileID: 11500000, guid: b2f02ff51edf7394f820385d628dc447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texts:
-  - {fileID: 5364159706251371032}
+  rectTransform: {fileID: 8743176297527403921}
+  progressSlider: {fileID: 3700371861546027980}
+  progressPercentageText: {fileID: 5364159706251371032}

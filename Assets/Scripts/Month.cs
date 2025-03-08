@@ -37,6 +37,6 @@ public class Month
     public override string ToString()
     {
         CultureInfo ci = new CultureInfo("en-US");
-        return DateTime.Now.ToString("MMMM", ci);
+        return new DateTime(year, month, 1).ToString("MMMM", ci);
     }
 }
