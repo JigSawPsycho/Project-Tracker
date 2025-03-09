@@ -73,8 +73,8 @@ public class PMSetupSceneManager : MonoBehaviour
         }
         startMonth = new(int.Parse(startMonthInputField.text), int.Parse(startYearInputField.text) + 2000);
         endMonth = startMonth.CreateFollowingMonth();
-        reportDateDropdown.options = startMonth.ConvertMonthFridaysToOptionData().ToList();
-        reportDateDropdown.AddOptions(endMonth.ConvertMonthFridaysToOptionData().ToList());
+        reportDateDropdown.options = startMonth.ConvertMonthMondaysToOptionData().ToList();
+        reportDateDropdown.AddOptions(endMonth.ConvertMonthMondaysToOptionData().ToList());
         reportDateDropdown.interactable = true;
         exportButton.interactable = true;
     }
