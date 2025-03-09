@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using System.Text;
 using SFB;
 using UnityEngine;
 
@@ -13,12 +15,13 @@ public class PMConfigSaver
 
     private void SaveFile()
     {
-        DownloadFile(gameObject.name, "OnFileDownload", "sample.txt", bytes, bytes.Length);
+        byte[] bytes = Encoding.ASCII.GetBytes(JsonUtility.ToJson(pmConfig));
+        DownloadFile(gameObject.name, "OnFileDownload", "pmconfig.pmcfg", bytes, bytes.Length);
     }
 #else
     private void SaveFile()
     {
-        var path = StandaloneFileBrowser.SaveFilePanel("Title", "", "sample", "txt");
+        var path = StandaloneFileBrowser.SaveFilePanel("Title", "", "pmconfig", "pmcfg");
         if (!string.IsNullOrEmpty(path)) {
             File.WriteAllText(path, JsonUtility.ToJson(pmConfig));
         }

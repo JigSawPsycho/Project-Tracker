@@ -57,6 +57,12 @@ public class Month
         return new DateTime(year, month, 1).ToString("MMMM", ci);
     }
 
+    public static int ConvertStringToMonthInt(string str)
+    {
+        CultureInfo ci = new CultureInfo("en-US");
+        return DateTime.ParseExact(str, "MMMM", ci).Month;
+    }
+
     public TMPro.TMP_Dropdown.OptionData[] ConvertMonthMondaysToOptionData()
     {
         return GetMondays().ToList().ConvertAll(x => new TMPro.TMP_Dropdown.OptionData($"{x} {this} {year}")).ToArray();
@@ -64,6 +70,6 @@ public class Month
 
     public TMPro.TMP_Dropdown.OptionData[] ConvertMonthFridaysToOptionData()
     {
-        return GetMondays().ToList().ConvertAll(x => new TMPro.TMP_Dropdown.OptionData($"{x} {this} {year}")).ToArray();
+        return GetFridays().ToList().ConvertAll(x => new TMPro.TMP_Dropdown.OptionData($"{x} {this} {year}")).ToArray();
     }
 }
