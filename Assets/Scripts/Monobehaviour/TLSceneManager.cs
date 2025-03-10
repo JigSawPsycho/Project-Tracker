@@ -24,30 +24,32 @@ public class TLSceneManager : MonoBehaviour
 
     public void Start()
     {
-        importConfigButton.onClick.AddListener(ImportConfig_OnClick);
-        importReportButton.onClick.AddListener(ImportReport_OnClick);
+        PMConfigLoader.onLoadComplete += PMConfigLoader_OnLoad;
+        ReportLoader.onLoadComplete += ReportLoader_OnLoadComplete;
+        ReportSaver.onPreFileDownload += Generate_OnClick;
+        ReportSaver.onFileDownloaded += ReportSaver_OnFileDownloaded;
         addProjectButton.onClick.AddListener(AddProject_OnClick);
-        generateButton.onClick.AddListener(Generate_OnClick);
+    }
+
+    private void ReportSaver_OnFileDownloaded()
+    {
+        SceneManager.LoadScene(3);
     }
 
     public void OnDestroy()
     {
-        importConfigButton.onClick.RemoveListener(ImportConfig_OnClick);
-        importReportButton.onClick.RemoveListener(ImportReport_OnClick);
+        PMConfigLoader.onLoadComplete -= PMConfigLoader_OnLoad;
+        ReportLoader.onLoadComplete -= ReportLoader_OnLoadComplete;
+        ReportSaver.onPreFileDownload -= Generate_OnClick;
+        ReportSaver.onFileDownloaded -= ReportSaver_OnFileDownloaded;
         addProjectButton.onClick.RemoveListener(AddProject_OnClick);
-        generateButton.onClick.RemoveListener(Generate_OnClick);
-    }
-
-    private void ImportReport_OnClick()
-    {
-        contentCanvasGroup.interactable = false;
-        waitingForUploadGameObject.SetActive(true);
-        importButtonsGroup.gameObject.SetActive(false);
-        new ReportLoader(this, "tlrpt", ReportLoader_OnLoadComplete).StartLoad();
     }
 
     private void ReportLoader_OnLoadComplete(Report report)
     {
+        contentCanvasGroup.interactable = false;
+        waitingForUploadGameObject.SetActive(true);
+        importButtonsGroup.gameObject.SetActive(false);
         if(report == null)
         {
             importButtonsGroup.gameObject.SetActive(true);
@@ -109,10 +111,12 @@ public class TLSceneManager : MonoBehaviour
             team = team
         };
 
-        new ReportSaver(report).Save();
-
         Main.report = report;
-        SceneManager.LoadScene(3);
+        ReportSaver.report = report;
+    }
+
+    public void OnFileDownload() {
+
     }
 
     private Project ConvertToProject(ProjectSetupUI projectSetupUI)
@@ -176,16 +180,11 @@ public class TLSceneManager : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentCanvasGroup.transform as RectTransform);
     }
 
-    private void ImportConfig_OnClick()
+    private void PMConfigLoader_OnLoad(ProjectManagerConfig config)
     {
         contentCanvasGroup.interactable = false;
         waitingForUploadGameObject.SetActive(true);
         importButtonsGroup.gameObject.SetActive(false);
-        new PMConfigLoader(this, "pmcfg", PMConfigLoader_OnLoad).StartLoad();
-    }
-
-    private void PMConfigLoader_OnLoad(ProjectManagerConfig config)
-    {
         if (config == null)
         {
             importButtonsGroup.SetActive(true);

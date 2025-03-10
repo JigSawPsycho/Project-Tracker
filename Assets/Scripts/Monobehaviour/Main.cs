@@ -37,7 +37,8 @@ public class Main : MonoBehaviour
         GenerateWeeks(startMonth, endMonth, out int weekCount);
 
         Month reportMonth = new Month(report.reportMonth, report.reportYear);
-        asAtTimeText.text = $"As at {report.reportWeek} {reportMonth} {report.reportYear}";
+        int date = reportMonth.GetFollowingFridayFromMonday(report.reportWeek, out Month fridayMonth);
+        asAtTimeText.text = $"As at {date} {fridayMonth} {fridayMonth.year}";
 
         for (int i = 0; i < report.team.projects.Length; i++)
         {
@@ -66,7 +67,8 @@ public class Main : MonoBehaviour
         projectTextContainer.texts[0].text = (i + 1).ToString();
         Month projStartMonth = project.startMonth == startMonth.month ? startMonth : endMonth;
         Month projEndMonth = project.endMonth == startMonth.month ? startMonth : endMonth;
-        projectTextContainer.texts[1].text = $"<b>{project.name}</b>\nDue: {project.endWeek} {projEndMonth}";
+        int projEndDate = projEndMonth.GetFollowingFridayFromMonday(project.endWeek, out Month projEndMonthFriday);
+        projectTextContainer.texts[1].text = $"<b>{project.name}</b>\nDue: {projEndDate} {projEndMonthFriday}";
         GameObject row = Instantiate(rowPrefab, rowContainer);
         List<RectTransform> cellRectTransforms = new List<RectTransform>();
         for (int j = 0; j < weekCount; j++)
@@ -74,11 +76,12 @@ public class Main : MonoBehaviour
             cellRectTransforms.Add(Instantiate(cellPrefab, row.transform).GetComponent<RectTransform>());
         }
         yield return null;
+        yield return null;
         if(i == 0)
         {
             int index = GetWeekIndexAcrossTwoMonths(report.reportWeek, reportMonth, endMonth);
             RectTransform reportWeekMarker = Instantiate(reportWeekMarkerPrefab, row.transform);
-            reportWeekMarker.position = new Vector3(row.transform.GetChild(index).position.x - weekPadding/2f, reportWeekMarker.position.y, 0);
+            reportWeekMarker.localPosition = new Vector3(row.transform.GetChild(index).localPosition.x - (weekPadding/2f), reportWeekMarker.localPosition.y, 0);
         }
         InstantiateProjectProgressBars(startMonth, project, projStartMonth, projEndMonth, row);
         Instantiate(projectNoteBoxPrefab, projectNoteBoxContainer).texts[0].text = string.Join("\n", project.notes);

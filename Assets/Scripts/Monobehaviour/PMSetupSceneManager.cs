@@ -19,25 +19,26 @@ public class PMSetupSceneManager : MonoBehaviour
     {
         startMonthInputField.onValueChanged.AddListener(OnStartDateInputFieldsValueChanged);
         startYearInputField.onValueChanged.AddListener(OnStartDateInputFieldsValueChanged);
-        exportButton.onClick.AddListener(OnExportButtonClick);
-        importButton.onClick.AddListener(OnImportButtonClick);
+        PMConfigLoader.onLoadComplete += OnPMConfigLoad;
+        PMConfigSaver.onPreFileDownload += PMConfigSaver_OnPreFileDownload;
     }
 
-    private void OnImportButtonClick()
+    public void OnDestroy()
     {
-        new PMConfigLoader(this, "pmcfg", OnPMConfigLoad).StartLoad();
+        PMConfigLoader.onLoadComplete -= OnPMConfigLoad;
+        PMConfigSaver.onPreFileDownload -= PMConfigSaver_OnPreFileDownload;
     }
 
     private void OnPMConfigLoad(ProjectManagerConfig pmConfig)
     {
         teamNamesInputField.text = string.Join(",", pmConfig.teamNames);
         startMonthInputField.text = pmConfig.startMonth.ToString();
-        startYearInputField.text = pmConfig.startYear.ToString();
+        startYearInputField.text = pmConfig.startYear.ToString().Substring(2);
     }
 
-    private void OnExportButtonClick()
+    public void PMConfigSaver_OnPreFileDownload()
     {
-        new PMConfigSaver(GeneratePMConfigFromUI()).Save();
+        PMConfigSaver.pmConfig = GeneratePMConfigFromUI();
     }
 
     private ProjectManagerConfig GeneratePMConfigFromUI()

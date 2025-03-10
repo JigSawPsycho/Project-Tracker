@@ -63,6 +63,14 @@ public class Month
         return DateTime.ParseExact(str, "MMMM", ci).Month;
     }
 
+    public int GetFollowingFridayFromMonday(int day, out Month fridayMonth)
+    {
+        fridayMonth = this;
+        DateTime dt = new DateTime(year, month, 1).AddDays(5);
+        if(dt.Month != month || dt.Year != year) fridayMonth = new Month(dt.Year, dt.Month);
+        return dt.Day;
+    }
+
     public TMPro.TMP_Dropdown.OptionData[] ConvertMonthMondaysToOptionData()
     {
         return GetMondays().ToList().ConvertAll(x => new TMPro.TMP_Dropdown.OptionData($"{x} {this} {year}")).ToArray();
