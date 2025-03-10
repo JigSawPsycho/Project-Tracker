@@ -266,7 +266,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.52156866, g: 0.96862745, b: 0.3019608, a: 0.73333335}
+  m_Color: {r: 0.52156866, g: 0.96862745, b: 0.3019608, a: 0.7490196}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -636,4 +636,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 8743176297527403921}
   progressSlider: {fileID: 3700371861546027980}
+  sliderBackground: {fileID: 2879798423041961871}
+  sliderFill: {fileID: 4324247267463522682}
+  sliderOutline: {fileID: 8666172359432329869}
   progressPercentageText: {fileID: 5364159706251371032}
+  statusColourProfiles:
+  - status: 0
+    backgroundColor: {r: 0.52156866, g: 0.96862745, b: 0.3019608, a: 0.2509804}
+    outlineColor: {r: 0.34901962, g: 0.8039216, b: 0.1254902, a: 1}
+  - status: 1
+    backgroundColor: {r: 0.97647065, g: 0.7960785, b: 0.6117647, a: 0.2509804}
+    outlineColor: {r: 0.9960785, g: 0.6, b: 0, a: 1}
+  - status: 2
+    backgroundColor: {r: 0.9764706, g: 0.6214782, b: 0.6117647, a: 0.2509804}
+    outlineColor: {r: 0.99607843, g: 0.016601307, b: 0, a: 1}

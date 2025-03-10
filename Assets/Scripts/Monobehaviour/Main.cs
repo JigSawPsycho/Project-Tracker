@@ -98,6 +98,7 @@ public class Main : MonoBehaviour
         SetupProgressBarTransform(startMonth, projStartMonth, projEndMonth, row, startWeekIndex, endWeekIndex, projectProgressBarUI.rectTransform);
         projectProgressBarUI.progressSlider.value = (float)project.progress/100f;
         projectProgressBarUI.progressPercentageText.text = $"{((int)project.progress).ToString()}%";
+        projectProgressBarUI.SetStatusColours(project.status);
     }
 
     private void SetupProgressBarTransform(Month startMonth, Month projStartMonth, Month projEndMonth, GameObject row, int startWeekIndex, int endWeekIndex, RectTransform projectProgressRect)
