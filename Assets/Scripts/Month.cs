@@ -66,8 +66,8 @@ public class Month
     public int GetFollowingFridayFromMonday(int day, out Month fridayMonth)
     {
         fridayMonth = this;
-        DateTime dt = new DateTime(year, month, 1).AddDays(5);
-        if(dt.Month != month || dt.Year != year) fridayMonth = new Month(dt.Year, dt.Month);
+        DateTime dt = new DateTime(year, month, day).AddDays(4);
+        if(dt.Month != month || dt.Year != year) fridayMonth = new Month(dt.Month, dt.Year);
         return dt.Day;
     }
 

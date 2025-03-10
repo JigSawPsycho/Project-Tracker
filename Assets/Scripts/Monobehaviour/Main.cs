@@ -56,7 +56,7 @@ public class Main : MonoBehaviour
     private int GetWeekIndexAcrossTwoMonths(int weekDate, Month targetMonth, Month laterMonth)
     {
         int index = targetMonth.GetMondays().ToList().FindIndex(x => x == weekDate);
-        if(targetMonth.month == laterMonth.month && targetMonth.year == laterMonth.year) index += laterMonth.GetMondays().Length;
+        if(targetMonth.month == laterMonth.month && targetMonth.year == laterMonth.year) index += laterMonth.GetMondays().Length - 1;
         return index;
     }
 
@@ -81,7 +81,8 @@ public class Main : MonoBehaviour
         {
             int index = GetWeekIndexAcrossTwoMonths(report.reportWeek, reportMonth, endMonth);
             RectTransform reportWeekMarker = Instantiate(reportWeekMarkerPrefab, row.transform);
-            reportWeekMarker.localPosition = new Vector3(row.transform.GetChild(index).localPosition.x - (weekPadding/2f), reportWeekMarker.localPosition.y, 0);
+            RectTransform cellRectTransform = row.transform.GetChild(index) as RectTransform;
+            reportWeekMarker.localPosition = new Vector3(cellRectTransform.localPosition.x + cellRectTransform.sizeDelta.x + (weekPadding/2f), reportWeekMarker.localPosition.y, 0);
         }
         InstantiateProjectProgressBars(startMonth, project, projStartMonth, projEndMonth, row);
         Instantiate(projectNoteBoxPrefab, projectNoteBoxContainer).texts[0].text = string.Join("\n", project.notes);
