@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2a78accdc29e2e440ae5fb1ed8df01c3
+timeCreated: 1520423547
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 67779
+  packageName: Screenshot Companion
+  packageVersion: 1.4
+  assetPath: Assets/Plugins/ScreenshotCompanion/Example/ScreenshotCompanion.unity
+  uploadId: 233484

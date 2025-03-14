@@ -12,6 +12,7 @@ public class ScreenshotSaver : MonoBehaviour, IPointerDownHandler
 {
     public static Action onPreFileDownload = delegate { };
     public static Action onFileDownloaded = delegate { };
+    public Camera targetCamera;
 #if UNITY_WEBGL && !UNITY_EDITOR
     //
     // WebGL
@@ -56,9 +57,21 @@ public class ScreenshotSaver : MonoBehaviour, IPointerDownHandler
     public Texture2D CaptureScreenshotTexture()
     {
         gameObject.SetActive(false);
-        Texture2D tex = ScreenCapture.CaptureScreenshotAsTexture(8);
+        int resWidth = 3840;
+        int resHeight = 2160;
+
+        RenderTexture rt = new RenderTexture(resWidth, resHeight, 24);
+
+        targetCamera.targetTexture = rt;
+        Texture2D screenShot = new Texture2D(resWidth, resHeight, TextureFormat.RGB24, false);
+        targetCamera.Render();
+        RenderTexture.active = rt;
+        screenShot.ReadPixels(new Rect(0, 0, resWidth, resHeight), 0, 0);
+        targetCamera.targetTexture = null;
+        RenderTexture.active = null;
+        DestroyImmediate(rt);
         gameObject.SetActive(true);
-        return tex;
+        return screenShot;
     }
 
     public void OnFileDownload() {

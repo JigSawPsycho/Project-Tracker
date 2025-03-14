@@ -23,6 +23,7 @@ public class Main : MonoBehaviour
     public Transform projectNoteBoxContainer;
     public ProgressBarUI projectProgressPrefab;
     public RectTransform reportWeekMarkerPrefab;
+    public RectTransform tableContainer;
     public static Report report;
     private IEnumerator Start()
     {
@@ -80,9 +81,12 @@ public class Main : MonoBehaviour
         if(i == 0)
         {
             int index = GetWeekIndexAcrossTwoMonths(report.reportWeek, reportMonth, endMonth);
-            RectTransform reportWeekMarker = Instantiate(reportWeekMarkerPrefab, row.transform);
             RectTransform cellRectTransform = row.transform.GetChild(index) as RectTransform;
-            reportWeekMarker.localPosition = new Vector3(cellRectTransform.localPosition.x + cellRectTransform.sizeDelta.x + (weekPadding/2f), reportWeekMarker.localPosition.y, 0);
+            RectTransform reportWeekMarker = Instantiate(reportWeekMarkerPrefab, tableContainer);
+            float cellSize = cellRectTransform.sizeDelta.x + (weekPadding/2f);
+            Vector3 targetPos = new Vector3(cellRectTransform.position.x, reportWeekMarker.position.y, 0);
+            reportWeekMarker.position = targetPos;
+            reportWeekMarker.localPosition += Vector3.right * cellSize;
         }
         InstantiateProjectProgressBars(startMonth, project, projStartMonth, projEndMonth, row);
         Instantiate(projectNoteBoxPrefab, projectNoteBoxContainer).texts[0].text = string.Join("\n", project.notes);
