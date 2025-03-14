@@ -9,6 +9,6 @@ public class ProjectSetupUI : MonoBehaviour
     public TMP_Dropdown startWeekDropdown;
     public TMP_Dropdown endWeekDropdown;
     public TMP_Dropdown statusDropdown;
-    public Slider progressSlider;
+    public TMP_InputField progressInputField;
     public Button removeButton;
 }

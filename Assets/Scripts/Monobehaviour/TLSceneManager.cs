@@ -33,7 +33,7 @@ public class TLSceneManager : MonoBehaviour
 
     private void ReportSaver_OnFileDownloaded()
     {
-        SceneManager.LoadScene(3);
+        SceneManager.LoadScene("TimelineScene");
     }
 
     public void OnDestroy()
@@ -59,17 +59,6 @@ public class TLSceneManager : MonoBehaviour
         contentCanvasGroup.interactable = true;
         contentCanvasGroup.gameObject.SetActive(true);
         waitingForUploadGameObject.SetActive(false);
-        pmConfig = new ProjectManagerConfig()
-        {
-            teamNames = new string[1] { report.team.name },
-            startMonth = report.startingMonth,
-            startYear = report.startingYear,
-            endMonth = report.endingMonth,
-            endYear = report.endingYear,
-            reportFriday = report.reportWeek,
-            reportMonth = report.reportMonth,
-            reportYear = report.reportYear
-        };
         teamNamesDropdown.options = new List<TMP_Dropdown.OptionData>(new TMP_Dropdown.OptionData[1] { new(name = report.team.name)});
         teamNamesDropdown.value = 0;
         foreach (var project in report.team.projects)
@@ -83,7 +72,7 @@ public class TLSceneManager : MonoBehaviour
             Month projEndMonth = new(project.endMonth, 1);
             projectSetupUI.endWeekDropdown.value = projectSetupUI.endWeekDropdown.options.FindIndex(x => x.text.Contains($"{project.endWeek} {projEndMonth}"));
             projectSetupUI.notesInputField.text = string.Join("\n", project.notes);
-            projectSetupUI.progressSlider.value = project.progress;
+            projectSetupUI.progressInputField.text = project.progress.ToString();
             projectSetupUI.statusDropdown.value = (int) project.status;
         }
         StartCoroutine(RefreshUI());
@@ -133,7 +122,7 @@ public class TLSceneManager : MonoBehaviour
             endWeek = endWeekInt,
             name = projectSetupUI.projectNameInputField.text,
             notes = projectSetupUI.notesInputField.text.Split('\n'),
-            progress = (int) projectSetupUI.progressSlider.value,
+            progress = Mathf.Clamp(int.Parse(projectSetupUI.progressInputField.text), 0, 100),
             status = (ProjectStatus) projectSetupUI.statusDropdown.value
         };
     }
@@ -159,17 +148,27 @@ public class TLSceneManager : MonoBehaviour
         Month endMonth = new Month(pmConfig.endMonth, pmConfig.endYear);
         List<TMP_Dropdown.OptionData> mondayOptionDatas = startMonth.ConvertMonthMondaysToOptionData().ToList();
         mondayOptionDatas.AddRange(endMonth.ConvertMonthMondaysToOptionData().ToList());
+        projectSetupUI.progressInputField.onValueChanged.AddListener(str => ProgressInputField_OnValueChanged(projectSetupUI.progressInputField, str));
         projectSetupUI.startWeekDropdown.options = mondayOptionDatas;
         projectSetupUI.endWeekDropdown.options = mondayOptionDatas;
         projectSetupUI.removeButton.onClick.AddListener(() => FlushProjectSetupUI(projectSetupUI));
         return projectSetupUI;
     }
 
+    private void ProgressInputField_OnValueChanged(TMP_InputField inputField, string value)
+    {
+        if(string.IsNullOrEmpty(value))
+        {
+            inputField.text = "0";
+        }
+    }
+
     private void FlushProjectSetupUI(ProjectSetupUI projectSetupUI)
     {
         projectSetupUIs.Remove(projectSetupUI);
         projectSetupUI.removeButton.onClick.RemoveAllListeners();
-        Destroy(projectSetupUI);
+        projectSetupUI.progressInputField.onValueChanged.RemoveAllListeners();
+        Destroy(projectSetupUI.gameObject);
         StartCoroutine(RefreshUI());
     }
 

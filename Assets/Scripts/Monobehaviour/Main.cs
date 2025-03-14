@@ -86,7 +86,8 @@ public class Main : MonoBehaviour
             float cellSize = cellRectTransform.sizeDelta.x + (weekPadding/2f);
             Vector3 targetPos = new Vector3(cellRectTransform.position.x, reportWeekMarker.position.y, 0);
             reportWeekMarker.position = targetPos;
-            reportWeekMarker.localPosition += Vector3.right * cellSize;
+            Vector3 offset = new Vector3(cellSize, 0, -reportWeekMarker.localPosition.z);
+            reportWeekMarker.localPosition += offset;
         }
         InstantiateProjectProgressBars(startMonth, project, projStartMonth, projEndMonth, row);
         Instantiate(projectNoteBoxPrefab, projectNoteBoxContainer).texts[0].text = string.Join("\n", project.notes);
