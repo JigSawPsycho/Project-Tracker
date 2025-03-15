@@ -152,6 +152,8 @@ public class TLSceneManager : MonoBehaviour
         projectSetupUI.startWeekDropdown.options = mondayOptionDatas;
         projectSetupUI.endWeekDropdown.options = mondayOptionDatas;
         projectSetupUI.removeButton.onClick.AddListener(() => FlushProjectSetupUI(projectSetupUI));
+        projectSetupUI.increasePrioButton.onClick.AddListener(() => ChangeProgressPriority(projectSetupUI, -1));
+        projectSetupUI.decreasePrioButton.onClick.AddListener(() => ChangeProgressPriority(projectSetupUI, 1));
         return projectSetupUI;
     }
 
@@ -163,10 +165,23 @@ public class TLSceneManager : MonoBehaviour
         }
     }
 
+    private void ChangeProgressPriority(ProjectSetupUI projectSetupUI, int priorityDelta)
+    {
+        int currentPrio = projectSetupUI.transform.GetSiblingIndex() + 1;
+        int newPrio = Mathf.Clamp(currentPrio + priorityDelta, 1, projectSetupUIContainer.childCount);
+        int prioIndex = newPrio - 1;
+        projectSetupUI.transform.SetSiblingIndex(prioIndex);
+        projectSetupUIs.Remove(projectSetupUI);
+        projectSetupUIs.Insert(prioIndex, projectSetupUI);
+        StartCoroutine(RefreshUI());
+    }
+
     private void FlushProjectSetupUI(ProjectSetupUI projectSetupUI)
     {
         projectSetupUIs.Remove(projectSetupUI);
         projectSetupUI.removeButton.onClick.RemoveAllListeners();
+        projectSetupUI.increasePrioButton.onClick.RemoveAllListeners();
+        projectSetupUI.decreasePrioButton.onClick.RemoveAllListeners();
         projectSetupUI.progressInputField.onValueChanged.RemoveAllListeners();
         Destroy(projectSetupUI.gameObject);
         StartCoroutine(RefreshUI());
@@ -174,6 +189,7 @@ public class TLSceneManager : MonoBehaviour
 
     private IEnumerator RefreshUI()
     {
+        projectSetupUIs.ForEach(x => x.projectPrioText.text = (x.transform.GetSiblingIndex() + 1).ToString());
         yield return null;
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentCanvasGroup.transform as RectTransform);
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentCanvasGroup.transform as RectTransform);

@@ -57,7 +57,7 @@ public class Main : MonoBehaviour
     private int GetWeekIndexAcrossTwoMonths(int weekDate, Month targetMonth, Month laterMonth)
     {
         int index = targetMonth.GetMondays().ToList().FindIndex(x => x == weekDate);
-        if(targetMonth.month == laterMonth.month && targetMonth.year == laterMonth.year) index += laterMonth.GetMondays().Length - 1;
+        if(targetMonth.month == laterMonth.month && targetMonth.year == laterMonth.year) index += laterMonth.GetMondays().Length + 1;
         return index;
     }
 

@@ -11,4 +11,7 @@ public class ProjectSetupUI : MonoBehaviour
     public TMP_Dropdown statusDropdown;
     public TMP_InputField progressInputField;
     public Button removeButton;
+    public Button increasePrioButton;
+    public Button decreasePrioButton;
+    public TextMeshProUGUI projectPrioText;
 }
