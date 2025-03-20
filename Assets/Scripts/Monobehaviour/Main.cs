@@ -54,10 +54,10 @@ public class Main : MonoBehaviour
         return targetMonth.GetMondays().ToList().FindIndex(x => x == weekDate);
     }
 
-    private int GetWeekIndexAcrossTwoMonths(int weekDate, Month targetMonth, Month laterMonth)
+    private int GetWeekIndexAcrossTwoMonths(int weekDate, Month targetMonth, Month firstMonth)
     {
         int index = targetMonth.GetMondays().ToList().FindIndex(x => x == weekDate);
-        if(targetMonth.month == laterMonth.month && targetMonth.year == laterMonth.year) index += laterMonth.GetMondays().Length + 1;
+        if(targetMonth.month != firstMonth.month) index += firstMonth.GetMondays().Length;
         return index;
     }
 
@@ -80,7 +80,7 @@ public class Main : MonoBehaviour
         yield return null;
         if(i == 0)
         {
-            int index = GetWeekIndexAcrossTwoMonths(report.reportWeek, reportMonth, endMonth);
+            int index = GetWeekIndexAcrossTwoMonths(report.reportWeek, reportMonth, startMonth);
             RectTransform cellRectTransform = row.transform.GetChild(index) as RectTransform;
             RectTransform reportWeekMarker = Instantiate(reportWeekMarkerPrefab, tableContainer);
             float cellSize = cellRectTransform.sizeDelta.x + (weekPadding/2f);
