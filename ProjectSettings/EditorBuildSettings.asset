@@ -8,13 +8,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/PathSelectScene.unity
     guid: f1885611eeacff84db951ccb64520567
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/PMSetupScene.unity
     guid: 9cdbe329e3f05e04eb5e9165fed2e285
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/TLSetupScene.unity
     guid: a5c12d556ab70244392151763ee392a3
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/TimelineScene.unity
     guid: eed4ee794b05ed644be02bf33b29127e
   m_configObjects:
