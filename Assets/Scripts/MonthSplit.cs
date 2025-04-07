@@ -1,21 +1,34 @@
 using System;
+using System.Collections.Generic;
 
 public class MonthSplit
 {
-    private Month month1;
-    private Month month2;
+    private List<Month> months;
 
-    public MonthSplit(Month month1, Month month2)
+    public MonthSplit(List<Month> months)
     {
-        this.month1 = month1;
-        this.month2 = month2;
+        this.months = months;
     }
 
-    public Month GetDominantMonth()
+    public List<Month> GetDominantMonths()
     {
-        int month1Mondays = month1.GetMondays().Length;
-        int month2Mondays = month2.GetMondays().Length;
-        if(month1Mondays == month2Mondays) return null;
-        return month1Mondays > month2Mondays ? month1 : month2;
+        int dominantMonthThreshold = 0;
+        List<Month> dominantMonths = new List<Month>();
+
+        foreach(var month in months)
+        {
+            int mondayCount = month.GetMondays().Length;
+            if (mondayCount > dominantMonthThreshold)
+            {
+                dominantMonths.Clear();
+                dominantMonths.Add(month);
+                dominantMonthThreshold = mondayCount;
+            }
+            else if (mondayCount == dominantMonthThreshold)
+            {
+                dominantMonths.Add(month);
+            }
+        }
+        return dominantMonths;
     }
 }

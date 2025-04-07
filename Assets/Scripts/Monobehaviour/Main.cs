@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Codice.Client.BaseCommands;
 using TMPro;
 using UnityEngine;
 
@@ -27,26 +28,58 @@ public class Main : MonoBehaviour
     public static Report report;
     private IEnumerator Start()
     {
+        yield return GenerateReportUI();
+    }
+
+    private IEnumerator GenerateReportUI()
+    {
         if(report == null)
         {
-            string teamJson = File.ReadAllText(Application.persistentDataPath + "/report.json");
-            report = JsonUtility.FromJson<Report>(teamJson);
+            report = new Report()
+            {
+                reportWeek = 1,
+                reportMonth = new Month(5, 2023),
+                months = new List<Month>()
+                {
+                    new Month(5, 2023),
+                    new Month(6, 2023),
+                    new Month(7, 2023)
+                },
+                team = new Team()
+                {
+                    name = "Test Team",
+                    projects = new Project[]
+                    {
+                        new Project()
+                        {
+                            name = "Test Project",
+                            startWeek = 1,
+                            startMonth = new Month(5, 2023),
+                            endWeek = 1,
+                            endMonth = new Month(5, 2023),
+                            progress = 50,
+                            status = ProjectStatus.OnTrack,
+                            notes = new string[]
+                            {
+                                "Test note"
+                            }
+                        }
+                    }
+                }
+            };
         }
         teamNameText.text = "Timeline " + report.team.name;
 
-        GenerateMonths(report, out Month startMonth, out Month endMonth);
-        GenerateWeeks(startMonth, endMonth, out int weekCount);
+        GenerateMonths(report);
+        GenerateWeeks(report.months, out int weekCount);
 
-        Month reportMonth = new Month(report.reportMonth, report.reportYear);
-        int date = reportMonth.GetFollowingFridayFromMonday(report.reportWeek, out Month fridayMonth);
+        int date = report.reportMonth.GetFollowingFridayFromMonday(report.reportWeek, out Month fridayMonth);
         asAtTimeText.text = $"As at {date} {fridayMonth} {fridayMonth.year}";
 
         for (int i = 0; i < report.team.projects.Length; i++)
         {
-            yield return SetupProject(report, reportMonth, startMonth, endMonth, weekCount, i);
+            yield return SetupProject(report, report.reportMonth, report.months, weekCount, i);
         }
-
-        // TODO: Add confidential marker
     }
 
     private int GetWeekIndexForMonthAndIndex(int weekDate, Month targetMonth)
@@ -54,21 +87,30 @@ public class Main : MonoBehaviour
         return targetMonth.GetMondays().ToList().FindIndex(x => x == weekDate);
     }
 
-    private int GetWeekIndexAcrossTwoMonths(int weekDate, Month targetMonth, Month firstMonth)
+    private int GetWeekIndexAcrossMonths(int weekDate, Month targetMonth, List<Month> months)
     {
-        int index = targetMonth.GetMondays().ToList().FindIndex(x => x == weekDate);
-        if(targetMonth.month != firstMonth.month) index += firstMonth.GetMondays().Length;
+        int index = 0;
+        foreach(var month in months)
+        {
+            if(!targetMonth.Equals(month))
+            {
+                index += month.GetMondays().Length;
+            }
+            else
+            {
+                index += targetMonth.GetMondays().ToList().FindIndex(x => x == weekDate);
+                break;
+            }
+        }
         return index;
     }
 
-    private IEnumerator SetupProject(Report report, Month reportMonth, Month startMonth, Month endMonth, int weekCount, int i)
+    private IEnumerator SetupProject(Report report, Month reportMonth, List<Month> months, int weekCount, int i)
     {
         Project project = report.team.projects[i];
         TextContainer projectTextContainer = Instantiate(projectPrefab, projectContainer);
         projectTextContainer.texts[0].text = (i + 1).ToString();
-        Month projStartMonth = project.startMonth == startMonth.month ? startMonth : endMonth;
-        Month projEndMonth = project.endMonth == startMonth.month ? startMonth : endMonth;
-        int projEndDate = projEndMonth.GetFollowingFridayFromMonday(project.endWeek, out Month projEndMonthFriday);
+        int projEndDate = project.endMonth.GetFollowingFridayFromMonday(project.endWeek, out Month projEndMonthFriday);
         projectTextContainer.texts[1].text = $"<b>{project.name}</b>\nDue: {projEndDate} {projEndMonthFriday}";
         GameObject row = Instantiate(rowPrefab, rowContainer);
         List<RectTransform> cellRectTransforms = new List<RectTransform>();
@@ -80,7 +122,7 @@ public class Main : MonoBehaviour
         yield return null;
         if(i == 0)
         {
-            int index = GetWeekIndexAcrossTwoMonths(report.reportWeek, reportMonth, startMonth);
+            int index = GetWeekIndexAcrossMonths(report.reportWeek, reportMonth, months);
             RectTransform cellRectTransform = row.transform.GetChild(index) as RectTransform;
             RectTransform reportWeekMarker = Instantiate(reportWeekMarkerPrefab, tableContainer);
             float cellSize = cellRectTransform.sizeDelta.x + (weekPadding/2f);
@@ -89,47 +131,26 @@ public class Main : MonoBehaviour
             Vector3 offset = new Vector3(cellSize, 0, -reportWeekMarker.localPosition.z);
             reportWeekMarker.localPosition += offset;
         }
-        InstantiateProjectProgressBars(startMonth, project, projStartMonth, projEndMonth, row);
+        InstantiateProjectProgressBars(months, project, project.startMonth, project.endMonth, row);
         Instantiate(projectNoteBoxPrefab, projectNoteBoxContainer).texts[0].text = string.Join("\n", project.notes);
     }
 
-    private void InstantiateProjectProgressBars(Month startMonth, Project project, Month projStartMonth, Month projEndMonth, GameObject row)
+    private void InstantiateProjectProgressBars(List<Month> months, Project project, Month projStartMonth, Month projEndMonth, GameObject row)
     {
-        List<int> startMonthMondays = projStartMonth.GetMondays().ToList();
-        List<int> endMonthMondays = projEndMonth.GetMondays().ToList();
-        int startWeekIndex = startMonthMondays.FindIndex(x => x == project.startWeek);
-        int endWeekIndex = endMonthMondays.FindIndex(x => x == project.endWeek);
         ProgressBarUI projectProgressBarUI = Instantiate(projectProgressPrefab, row.transform);
-        SetupProgressBarTransform(startMonth, projStartMonth, projEndMonth, row, startWeekIndex, endWeekIndex, projectProgressBarUI.rectTransform);
+        SetupProgressBarTransform(months, project, row, projectProgressBarUI.rectTransform);
         projectProgressBarUI.progressSlider.value = (float)project.progress/100f;
         projectProgressBarUI.progressPercentageText.text = $"{((int)project.progress).ToString()}%";
         projectProgressBarUI.SetStatusColours(project.status);
     }
 
-    private void SetupProgressBarTransform(Month startMonth, Month projStartMonth, Month projEndMonth, GameObject row, int startWeekIndex, int endWeekIndex, RectTransform projectProgressRect)
+    private void SetupProgressBarTransform(List<Month> months, Project project, GameObject row, RectTransform projectProgressRect)
     {
         RectTransform targetStartPos;
-        int startWeekRowIndex;
-        int endWeekRowIndex;
-        if (projStartMonth == startMonth)
-        {
-            startWeekRowIndex = startWeekIndex;
-            targetStartPos = row.transform.GetChild(startWeekRowIndex).transform as RectTransform;
-        }
-        else
-        {
-            startWeekRowIndex = startMonth.GetMondays().Length + startWeekIndex;
-            targetStartPos = row.transform.GetChild(startWeekRowIndex).transform as RectTransform;
-        }
+        int startWeekRowIndex = GetWeekIndexAcrossMonths(project.startWeek, project.startMonth, months);
+        int endWeekRowIndex = GetWeekIndexAcrossMonths(project.startWeek, project.startMonth, months);
 
-        if (projEndMonth == startMonth)
-        {
-            endWeekRowIndex = endWeekIndex;
-        }
-        else
-        {
-            endWeekRowIndex = startMonth.GetMondays().Length + endWeekIndex;
-        }
+        targetStartPos = row.transform.GetChild(startWeekRowIndex).transform as RectTransform;
         projectProgressRect.localPosition = targetStartPos.localPosition;
 
         int weeksToSpan = endWeekRowIndex - startWeekRowIndex;
@@ -141,39 +162,40 @@ public class Main : MonoBehaviour
         return oneWeekXSize * (weeksToSpan + 1) + (weekPadding * (weeksToSpan - 1));
     }
 
-    private void GenerateWeeks(Month startMonth, Month endMonth, out int weekCount)
+    private void GenerateWeeks(List<Month> months, out int weekCount)
     {
-        int[] startMonthMondays = startMonth.GetMondays();
-        int[] endMonthMondays = endMonth.GetMondays();
+        List<int> mondays = new List<int>();
+        months.ForEach(m => mondays.AddRange(m.GetMondays()));
 
-        weekCount = startMonthMondays.Length + endMonthMondays.Length;
-        foreach (int day in startMonthMondays)
-        {
-            Instantiate(weekPrefab, weekContainer).texts[0].text = day.ToString();
-        }
-
-        foreach (int day in endMonthMondays)
+        weekCount = mondays.Count;
+        foreach (int day in mondays)
         {
             Instantiate(weekPrefab, weekContainer).texts[0].text = day.ToString();
         }
     }
 
-    private void GenerateMonths(Report report, out Month startMonth, out Month endMonth)
+    private void GenerateMonths(Report report)
     {
-        startMonth = new Month(report.startingMonth, report.startingYear);
-        endMonth = new Month(report.endingMonth, report.endingYear);
+        List<Month> dominantMonths = new MonthSplit(report.months).GetDominantMonths();
+        foreach (var month in report.months)
+        {
+            MonthUI monthUI = GenerateMonthUI(month);
+            SetMonthLayoutSize(month, monthUI, dominantMonths);
+        }
+    }
 
-        MonthUI startMonthUI = Instantiate(monthPrefab, monthContainer);
-        MonthUI endMonthUI = Instantiate(monthPrefab, monthContainer);
+    private static void SetMonthLayoutSize(Month month, MonthUI monthUI, List<Month> dominantMonths)
+    {
+        float offsetTime = month.GetMondays().Length == 4 ? MonthUI.PREFERRED_WIDTH_4_WEEKS : MonthUI.PREFERRED_WIDTH_5_WEEKS;
+        if(report.months.Count == 3 && dominantMonths[0].GetMondays().Length == 5 && dominantMonths.Count >= 2) offsetTime = MonthUI.PREFERRED_WIDTH_5_WEEKS_3_MONTHS_2_LONG_MONTHS;
 
-        Month dominantMonth = new MonthSplit(startMonth, endMonth).GetDominantMonth();
+        if (dominantMonths.Contains(month)) monthUI.layoutElement.minWidth = offsetTime;
+    }
 
-        float offsetTime = dominantMonth != null ? dominantMonth.GetMondays().Length == 4 ? MonthUI.PREFERRED_WIDTH_4_WEEKS : MonthUI.PREFERRED_WIDTH_5_WEEKS : -1;
-
-        if (dominantMonth == startMonth) startMonthUI.layoutElement.minWidth = offsetTime;
-        else if (dominantMonth == endMonth) endMonthUI.layoutElement.minWidth = offsetTime;
-
-        startMonthUI.textContainer.texts[0].text = startMonth.ToString();
-        endMonthUI.textContainer.texts[0].text = endMonth.ToString();
+    private MonthUI GenerateMonthUI(Month month)
+    {
+        MonthUI monthUI = Instantiate(monthPrefab, monthContainer);
+        monthUI.textContainer.texts[0].text = month.ToString();
+        return monthUI;
     }
 }

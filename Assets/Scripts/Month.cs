@@ -5,11 +5,11 @@ using System.Linq;
 using UnityEngine;
 
 [Serializable]
-public class Month
+public class Month : IEquatable<Month>
 {
     // experimentation led to this number
-    public readonly int month;
-    public readonly int year;
+    public int month;
+    public int year;
 
     public Month(int month, int year)
     {
@@ -79,5 +79,10 @@ public class Month
     public TMPro.TMP_Dropdown.OptionData[] ConvertMonthFridaysToOptionData()
     {
         return GetFridays().ToList().ConvertAll(x => new TMPro.TMP_Dropdown.OptionData($"{x} {this} {year}")).ToArray();
+    }
+
+    public bool Equals(Month other)
+    {
+        return other.month == month && other.year == year;
     }
 }

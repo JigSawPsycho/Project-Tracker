@@ -1,15 +1,12 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
 public class ProjectManagerConfig
 {
-    public string[] teamNames;
-    public int startMonth;
-    public int startYear;
-    public int endMonth;
-    public int endYear;
+    public List<string> teamNames;
+    public List<Month> months;
     public int reportFriday;
-    public int reportMonth;
-    public int reportYear;
+    public Month reportMonth;
 }

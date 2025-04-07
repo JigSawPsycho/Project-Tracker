@@ -13,9 +13,9 @@ public class Project
 {
     public string name;
     public int startWeek;
-    public int startMonth;
+    public Month startMonth;
     public int endWeek;
-    public int endMonth;
+    public Month endMonth;
     public int progress;
     public ProjectStatus status;
     public string[] notes;

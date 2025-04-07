@@ -1,15 +1,12 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
 public class Report
 {
     public int reportWeek;
-    public int reportMonth;
-    public int reportYear;
-    public int startingMonth;
-    public int startingYear;
-    public int endingMonth;
-    public int endingYear;
+    public Month reportMonth;
+    public List<Month> months;
     public Team team;
 }

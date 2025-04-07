@@ -67,10 +67,8 @@ public class TLSceneManager : MonoBehaviour
             projectSetupUIs.Add(projectSetupUI);
 
             projectSetupUI.projectNameInputField.text = project.name;
-            Month projStartMonth = new(project.startMonth, 1);
-            projectSetupUI.startWeekDropdown.value = projectSetupUI.startWeekDropdown.options.FindIndex(x => x.text.Contains($"{project.startWeek} {projStartMonth}"));
-            Month projEndMonth = new(project.endMonth, 1);
-            projectSetupUI.endWeekDropdown.value = projectSetupUI.endWeekDropdown.options.FindIndex(x => x.text.Contains($"{project.endWeek} {projEndMonth}"));
+            projectSetupUI.startWeekDropdown.value = projectSetupUI.startWeekDropdown.options.FindIndex(x => x.text.Contains($"{project.startWeek} {project.startMonth}"));
+            projectSetupUI.endWeekDropdown.value = projectSetupUI.endWeekDropdown.options.FindIndex(x => x.text.Contains($"{project.endWeek} {project.endMonth}"));
             projectSetupUI.notesInputField.text = string.Join("\n", project.notes);
             projectSetupUI.progressInputField.text = project.progress.ToString();
             projectSetupUI.statusDropdown.value = (int) project.status;
@@ -90,13 +88,9 @@ public class TLSceneManager : MonoBehaviour
 
         Report report = new Report()
         {
-            startingMonth = pmConfig.startMonth,
-            startingYear = pmConfig.startYear,
-            endingMonth = pmConfig.endMonth,
-            endingYear = pmConfig.endYear,
+            months = pmConfig.months,
             reportMonth = pmConfig.reportMonth,
             reportWeek = pmConfig.reportFriday,
-            reportYear = pmConfig.reportYear,
             team = team
         };
 
@@ -110,15 +104,15 @@ public class TLSceneManager : MonoBehaviour
 
     private Project ConvertToProject(ProjectSetupUI projectSetupUI)
     {
-        GetProjectDateInfo(projectSetupUI.startWeekDropdown, out int startWeekInt, out int startMonthInt);
+        GetProjectDateInfo(projectSetupUI.startWeekDropdown, out int startWeekInt, out Month startMonth);
 
-        GetProjectDateInfo(projectSetupUI.endWeekDropdown, out int endWeekInt, out int endMonthInt);
+        GetProjectDateInfo(projectSetupUI.endWeekDropdown, out int endWeekInt, out Month endMonth);
 
         return new Project() 
         { 
-            startMonth = startMonthInt,
+            startMonth = startMonth,
             startWeek = startWeekInt,
-            endMonth = endMonthInt,
+            endMonth = endMonth,
             endWeek = endWeekInt,
             name = projectSetupUI.projectNameInputField.text,
             notes = projectSetupUI.notesInputField.text.Split('\n'),
@@ -127,12 +121,12 @@ public class TLSceneManager : MonoBehaviour
         };
     }
 
-    private void GetProjectDateInfo(TMP_Dropdown possibleWeeksDropdown, out int weekInt, out int monthInt)
+    private void GetProjectDateInfo(TMP_Dropdown possibleWeeksDropdown, out int weekInt, out Month month)
     {
         string dateStr = possibleWeeksDropdown.options[possibleWeeksDropdown.value].text;
         string[] splits = dateStr.Split(" ");
         weekInt = int.Parse(splits[0]);
-        monthInt = Month.ConvertStringToMonthInt(splits[1]);
+        month = new Month(Month.ConvertStringToMonthInt(splits[1]), int.Parse(splits[2]));
     }
 
     private void AddProject_OnClick()
@@ -144,10 +138,8 @@ public class TLSceneManager : MonoBehaviour
     private ProjectSetupUI GenerateProjectSetupUI()
     {
         ProjectSetupUI projectSetupUI = Instantiate(projectSetupUIPrefab, projectSetupUIContainer);
-        Month startMonth = new Month(pmConfig.startMonth, pmConfig.startYear);
-        Month endMonth = new Month(pmConfig.endMonth, pmConfig.endYear);
-        List<TMP_Dropdown.OptionData> mondayOptionDatas = startMonth.ConvertMonthMondaysToOptionData().ToList();
-        mondayOptionDatas.AddRange(endMonth.ConvertMonthMondaysToOptionData().ToList());
+        List<TMP_Dropdown.OptionData> mondayOptionDatas = new List<TMP_Dropdown.OptionData>();
+        pmConfig.months.ForEach(x => mondayOptionDatas.AddRange(x.ConvertMonthMondaysToOptionData().ToList()));
         projectSetupUI.progressInputField.onValueChanged.AddListener(str => ProgressInputField_OnValueChanged(projectSetupUI.progressInputField, str));
         projectSetupUI.startWeekDropdown.options = mondayOptionDatas;
         projectSetupUI.endWeekDropdown.options = mondayOptionDatas;
