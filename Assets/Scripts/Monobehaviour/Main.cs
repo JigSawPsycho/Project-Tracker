@@ -37,13 +37,13 @@ public class Main : MonoBehaviour
         {
             report = new Report()
             {
-                reportWeek = 1,
-                reportMonth = new Month(5, 2023),
+                reportWeek = 7,
+                reportMonth = new Month(4, 2025),
                 months = new List<Month>()
                 {
-                    new Month(5, 2023),
-                    new Month(6, 2023),
-                    new Month(7, 2023)
+                    new Month(4, 2025),
+                    new Month(5, 2025),
+                    new Month(6, 2025)
                 },
                 team = new Team()
                 {
@@ -53,10 +53,10 @@ public class Main : MonoBehaviour
                         new Project()
                         {
                             name = "Test Project",
-                            startWeek = 1,
-                            startMonth = new Month(5, 2023),
-                            endWeek = 1,
-                            endMonth = new Month(5, 2023),
+                            startWeek = 7,
+                            startMonth = new Month(4, 2025),
+                            endWeek = 30,
+                            endMonth = new Month(6, 2025),
                             progress = 50,
                             status = ProjectStatus.OnTrack,
                             notes = new string[]
@@ -148,7 +148,7 @@ public class Main : MonoBehaviour
     {
         RectTransform targetStartPos;
         int startWeekRowIndex = GetWeekIndexAcrossMonths(project.startWeek, project.startMonth, months);
-        int endWeekRowIndex = GetWeekIndexAcrossMonths(project.startWeek, project.startMonth, months);
+        int endWeekRowIndex = GetWeekIndexAcrossMonths(project.endWeek, project.endMonth, months);
 
         targetStartPos = row.transform.GetChild(startWeekRowIndex).transform as RectTransform;
         projectProgressRect.localPosition = targetStartPos.localPosition;
@@ -187,7 +187,17 @@ public class Main : MonoBehaviour
     private static void SetMonthLayoutSize(Month month, MonthUI monthUI, List<Month> dominantMonths)
     {
         float offsetTime = month.GetMondays().Length == 4 ? MonthUI.PREFERRED_WIDTH_4_WEEKS : MonthUI.PREFERRED_WIDTH_5_WEEKS;
-        if(report.months.Count == 3 && dominantMonths[0].GetMondays().Length == 5 && dominantMonths.Count >= 2) offsetTime = MonthUI.PREFERRED_WIDTH_5_WEEKS_3_MONTHS_2_LONG_MONTHS;
+        if(report.months.Count == 3 && dominantMonths[0].GetMondays().Length == 5)
+        {
+            if(dominantMonths.Count < 2)
+            {
+                offsetTime = MonthUI.PREFERRED_WIDTH_5_WEEKS_3_MONTHS;
+            }
+            else
+            {
+                offsetTime = MonthUI.PREFERRED_WIDTH_5_WEEKS_3_MONTHS_2_LONG_MONTHS;
+            }
+        } 
 
         if (dominantMonths.Contains(month)) monthUI.layoutElement.minWidth = offsetTime;
     }

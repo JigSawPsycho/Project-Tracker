@@ -142,11 +142,19 @@ public class TLSceneManager : MonoBehaviour
         pmConfig.months.ForEach(x => mondayOptionDatas.AddRange(x.ConvertMonthMondaysToOptionData().ToList()));
         projectSetupUI.progressInputField.onValueChanged.AddListener(str => ProgressInputField_OnValueChanged(projectSetupUI.progressInputField, str));
         projectSetupUI.startWeekDropdown.options = mondayOptionDatas;
-        projectSetupUI.endWeekDropdown.options = mondayOptionDatas;
+        UpdateEndWeekDropdownOptions(projectSetupUI);
+        projectSetupUI.startWeekDropdown.onValueChanged.AddListener(_ => UpdateEndWeekDropdownOptions(projectSetupUI));
         projectSetupUI.removeButton.onClick.AddListener(() => FlushProjectSetupUI(projectSetupUI));
         projectSetupUI.increasePrioButton.onClick.AddListener(() => ChangeProgressPriority(projectSetupUI, -1));
         projectSetupUI.decreasePrioButton.onClick.AddListener(() => ChangeProgressPriority(projectSetupUI, 1));
         return projectSetupUI;
+    }
+
+    private void UpdateEndWeekDropdownOptions(ProjectSetupUI projectSetupUI)
+    {
+        List<TMP_Dropdown.OptionData> mondayOptionDatas = new List<TMP_Dropdown.OptionData>();
+        pmConfig.months.ForEach(x => mondayOptionDatas.AddRange(x.ConvertMonthMondaysToOptionData().ToList()));
+        projectSetupUI.endWeekDropdown.options = mondayOptionDatas.GetRange(projectSetupUI.startWeekDropdown.value, mondayOptionDatas.Count - projectSetupUI.startWeekDropdown.value);
     }
 
     private void ProgressInputField_OnValueChanged(TMP_InputField inputField, string value)
