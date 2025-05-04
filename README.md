@@ -22,3 +22,4 @@ A simple tool for project managers and team leaders to generate a high res image
 # Known Issues
 - Tabbing between UI elements does not work
 - Have to refresh the page to go back to previous UI screen
+- No way to remove confidential warning at bottom of image
